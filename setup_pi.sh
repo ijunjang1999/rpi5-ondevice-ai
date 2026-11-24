@@ -10,7 +10,14 @@ step() { printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
 step "1. apt packages"
 PKGS="git curl v4l-utils fonts-nanum build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev
   libsqlite3-dev libncurses-dev xz-utils tk-dev libffi-dev liblzma-dev"
-if dpkg -s $PKGS >/dev/null 2>&1; then echo "already installed"; else sudo apt update && sudo apt install -y $PKGS; fi
+if dpkg -s $PKGS >/dev/null 2>&1; then
+  echo "already installed"
+elif [ -t 0 ] || sudo -n true 2>/dev/null; then
+  sudo apt update && sudo apt install -y $PKGS
+else
+  echo "!! sudo needs a password and there is no terminal - run this yourself on the Pi:"
+  echo "   sudo apt install -y $(echo $PKGS)"
+fi
 
 step "2. Python $PYVER (pyenv; first build takes ~10 min)"
 export PYENV_ROOT="$HOME/.pyenv"
@@ -48,6 +55,6 @@ img = numpy.zeros((480, 640, 3), numpy.uint8)
 p(img); t = time.time(); [p(img) for _ in range(5)]
 print(f"numpy {numpy.__version__} | opencv {cv2.__version__} | person det {(time.time()-t)/5*1000:.0f} ms")
 EOF
-ls /dev/video* 2>/dev/null || echo "!! no /dev/video* - plug in the USB webcam"
+ls /dev/video[0-9] 2>/dev/null || echo "!! USB webcam not found (/dev/video0 missing) - plug it in"
 chmod +x run.sh
 step "DONE - run:  ./run.sh   then open http://$(hostname -I | awk '{print $1}'):8000"
