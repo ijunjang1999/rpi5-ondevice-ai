@@ -2,6 +2,7 @@
 with a CJK font if one is installed (sudo apt install fonts-nanum)."""
 import glob
 import time
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -12,6 +13,7 @@ except ImportError:
     Image = None
 
 FONT_GLOBS = [
+    str(Path(__file__).resolve().parent.parent / "models" / "NanumGothic-Bold.ttf"),  # setup_pi.sh (no sudo)
     "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
     "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
@@ -39,7 +41,7 @@ def _find_font(size=18):
 FONT = _find_font()
 if FONT is None:
     print("[draw] Korean font not found - non-ASCII names shown as ASCII. "
-          "Fix: sudo apt install fonts-nanum", flush=True)
+          "Fix: rerun setup_pi.sh (downloads models/NanumGothic-Bold.ttf)", flush=True)
 
 
 def _ascii(s):

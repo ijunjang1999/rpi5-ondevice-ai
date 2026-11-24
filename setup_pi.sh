@@ -8,7 +8,7 @@ PYVER=3.11.11
 step() { printf '\n\033[1;36m==> %s\033[0m\n' "$*"; }
 
 step "1. apt packages"
-PKGS="git curl v4l-utils fonts-nanum build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev
+PKGS="git curl v4l-utils build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev
   libsqlite3-dev libncurses-dev xz-utils tk-dev libffi-dev liblzma-dev"
 if dpkg -s $PKGS >/dev/null 2>&1; then
   echo "already installed"
@@ -41,6 +41,7 @@ if [ ! -s models/ssd_mobilenet_v1.tflite ]; then
   .venv/bin/python -c "import zipfile; open('models/ssd_mobilenet_v1.tflite','wb').write(zipfile.ZipFile('models/ssd.zip').read('detect.tflite'))"
   rm models/ssd.zip
 fi
+get NanumGothic-Bold.ttf  https://github.com/google/fonts/raw/main/ofl/nanumgothic/NanumGothic-Bold.ttf
 ls -lh models
 
 step "5. check"

@@ -1,80 +1,77 @@
-# Raspberry Pi 5 스마트 보안카메라 (온디바이스 AI)
+# Raspberry Pi 5 ?ㅻ쭏??蹂댁븞移대찓??(?⑤뵒諛붿씠??AI)
 
-Raspberry Pi 5와 USB 웹캠 하나로 만드는 보안카메라입니다. 모든 AI 추론은 **Pi 안에서(온디바이스)** 돌아갑니다.
+Raspberry Pi 5? USB ?뱀틺 ?섎굹濡?留뚮뱶??蹂댁븞移대찓?쇱엯?덈떎. 紐⑤뱺 AI 異붾줎? **Pi ?덉뿉???⑤뵒諛붿씠??** ?뚯븘媛묐땲??
 
 ```
-웹캠 ─▶ 움직임 감지 ─▶ 사람 검출 ─▶ 얼굴 검출 ─▶ 얼굴 인식 ─▶ 이벤트 처리
-        (MOG2)        (SSD-MobileNet   (YuNet)     (SFace,       · 스냅샷 / 녹화(사전 2초 포함)
-                       v1 int8                      known/ 사진과 · CSV 기록
-                       TFLite)                      코사인 유사도) · 텔레그램 알림
-                                                                  · 웹 실시간 화면
+?뱀틺 ????吏곸엫 媛먯? ????щ엺 寃異?????쇨뎬 寃異?????쇨뎬 ?몄떇 ????대깽??泥섎━
+        (MOG2)        (SSD-MobileNet   (YuNet)     (SFace,       쨌 ?ㅻ깄??/ ?뱁솕(?ъ쟾 2珥??ы븿)
+                       v1 int8                      known/ ?ъ쭊怨?쨌 CSV 湲곕줉
+                       TFLite)                      肄붿궗???좎궗?? 쨌 ?붾젅洹몃옩 ?뚮┝
+                                                                  쨌 ???ㅼ떆媛??붾㈃
 ```
 
-| 단계 | 모델 / 방법 | 비고 |
+| ?④퀎 | 紐⑤뜽 / 諛⑸쾿 | 鍮꾧퀬 |
 |---|---|---|
-| 움직임 감지 | OpenCV MOG2 배경 차분 (160×120) | 움직임이 있을 때만 무거운 모델을 돌려 전력과 CPU를 아낌 |
-| 사람 검출 | SSD-MobileNet v1 (COCO, int8 TFLite, 300×300, NMS 내장) | 얼굴이 안 보여도 사람으로 잡힘 |
-| 얼굴 검출 | YuNet (ONNX, OpenCV `FaceDetectorYN`) | 얼굴 위치와 랜드마크 5점 |
-| 얼굴 인식 | SFace (ONNX, OpenCV `FaceRecognizerSF`) | 128차원 특징 벡터, 코사인 유사도 0.363 이상이면 같은 사람으로 판정 |
+| ?吏곸엫 媛먯? | OpenCV MOG2 諛곌꼍 李⑤텇 (160횞120) | ?吏곸엫???덉쓣 ?뚮쭔 臾닿굅??紐⑤뜽???뚮젮 ?꾨젰怨?CPU瑜??꾨굦 |
+| ?щ엺 寃異?| SSD-MobileNet v1 (COCO, int8 TFLite, 300횞300, NMS ?댁옣) | ?쇨뎬????蹂댁뿬???щ엺?쇰줈 ?≫옒 |
+| ?쇨뎬 寃異?| YuNet (ONNX, OpenCV `FaceDetectorYN`) | ?쇨뎬 ?꾩튂? ?쒕뱶留덊겕 5??|
+| ?쇨뎬 ?몄떇 | SFace (ONNX, OpenCV `FaceRecognizerSF`) | 128李⑥썝 ?뱀쭠 踰≫꽣, 肄붿궗???좎궗??0.363 ?댁긽?대㈃ 媛숈? ?щ엺?쇰줈 ?먯젙 |
 
-## 기능
-- **누구인지 판정:** `known/<이름>/` 폴더에 사진을 넣어 두면 화면에 이름이 표시됩니다. 등록되지 않은 얼굴은 `Unknown`으로 표시됩니다.
-- **이벤트 기록:** 사람이 나타나면 스냅샷을 저장하고 mp4로 녹화합니다. 녹화에는 감지 직전 2초가 포함됩니다. 기록은 `events/events.csv`에 남습니다.
-- **웹 대시보드:** `http://<Pi IP>:8000`에서 실시간 영상, 지금 화면에 있는 사람, 최근 이벤트 목록을 볼 수 있습니다.
-- **텔레그램 알림(무료):** 등록된 사람이면 "✅ 이름 님 확인", 미등록이면 "⚠️ 미등록 인물 감지"를 사진과 함께 보냅니다.
+## 湲곕뒫
+- **?꾧뎄?몄? ?먯젙:** `known/<?대쫫>/` ?대뜑???ъ쭊???ｌ뼱 ?먮㈃ ?붾㈃???대쫫???쒖떆?⑸땲?? ?깅줉?섏? ?딆? ?쇨뎬? `Unknown`?쇰줈 ?쒖떆?⑸땲??
+- **?대깽??湲곕줉:** ?щ엺???섑??섎㈃ ?ㅻ깄?룹쓣 ??ν븯怨?mp4濡??뱁솕?⑸땲?? ?뱁솕?먮뒗 媛먯? 吏곸쟾 2珥덇? ?ы븿?⑸땲?? 湲곕줉? `events/events.csv`???⑥뒿?덈떎.
+- **????쒕낫??** `http://<Pi IP>:8000`?먯꽌 ?ㅼ떆媛??곸긽, 吏湲??붾㈃???덈뒗 ?щ엺, 理쒓렐 ?대깽??紐⑸줉??蹂????덉뒿?덈떎.
+- **?붾젅洹몃옩 ?뚮┝(臾대즺):** ?깅줉???щ엺?대㈃ "???대쫫 ???뺤씤", 誘몃벑濡앹씠硫?"?좑툘 誘몃벑濡??몃Ъ 媛먯?"瑜??ъ쭊怨??④퍡 蹂대깄?덈떎.
 
-## 설치 (Pi)
+## ?ㅼ튂 (Pi)
 ```bash
 git clone https://github.com/ijunjang1999/rpi5-ondevice-ai.git ~/security_cam
 cd ~/security_cam
-bash setup_pi.sh      # apt, Python 3.11 venv, 패키지, 모델 다운로드 (처음에는 Python 빌드로 ~10분)
+bash setup_pi.sh      # apt, Python 3.11 venv, ?⑦궎吏, 紐⑤뜽 ?ㅼ슫濡쒕뱶 (泥섏쓬?먮뒗 Python 鍮뚮뱶濡?~10遺?
 ```
-> Pi OS Trixie의 기본 Python은 3.13입니다. `tflite-runtime` 2.14는 3.13용 패키지가 없고 numpy 2와도 맞지 않습니다. 그래서 pyenv로 Python 3.11을 따로 설치하고 `numpy==1.26.4`로 고정했습니다.
+> Pi OS Trixie??湲곕낯 Python? 3.13?낅땲?? `tflite-runtime` 2.14??3.13???⑦궎吏媛 ?녾퀬 numpy 2???留욎? ?딆뒿?덈떎. 洹몃옒??pyenv濡?Python 3.11???곕줈 ?ㅼ튂?섍퀬 `numpy==1.26.4`濡?怨좎젙?덉뒿?덈떎.
 
-Windows PC에서 SSH로 보낼 때는 `.\deploy.ps1 -Setup`을 사용합니다. 기본 접속 대상은 `ssh rpi5`입니다.
+Windows PC?먯꽌 SSH濡?蹂대궪 ?뚮뒗 `.\deploy.ps1 -Setup`???ъ슜?⑸땲?? 湲곕낯 ?묒냽 ??곸? `ssh rpi5`?낅땲??
 
-## 사용법
-```bash
-# 1) 얼굴 등록: 웹캠으로 5장 촬영 (또는 known/이름/ 폴더에 사진을 직접 넣기)
-.venv/bin/python tools/capture_face.py 홍길동
-./run.sh --enroll          # 등록 결과만 확인
+## ?ъ슜踰?```bash
+# 1) ?쇨뎬 ?깅줉: ?뱀틺?쇰줈 5??珥ъ쁺 (?먮뒗 known/?대쫫/ ?대뜑???ъ쭊??吏곸젒 ?ｊ린)
+.venv/bin/python tools/capture_face.py ?띻만??./run.sh --enroll          # ?깅줉 寃곌낵留??뺤씤
 
-# 2) 실행
-./run.sh                   # 브라우저에서 http://<Pi IP>:8000
-./run.sh --show            # Pi 화면에도 창 띄우기 (q로 종료)
+# 2) ?ㅽ뻾
+./run.sh                   # 釉뚮씪?곗??먯꽌 http://<Pi IP>:8000
+./run.sh --show            # Pi ?붾㈃?먮룄 李??꾩슦湲?(q濡?醫낅즺)
 ```
 
-### 텔레그램 알림 설정
-1. 텔레그램에서 `@BotFather`를 열고 `/newbot`으로 봇을 만든 뒤 **토큰**을 복사합니다.
-2. 만든 봇의 대화방에 아무 메시지나 보냅니다.
-3. `.venv/bin/python tools/telegram_setup.py <토큰>`을 실행합니다. chat_id를 자동으로 찾아 `config.local.json`에 저장합니다. 이 파일은 git에 올라가지 않습니다.
+### ?붾젅洹몃옩 ?뚮┝ ?ㅼ젙
+1. ?붾젅洹몃옩?먯꽌 `@BotFather`瑜??닿퀬 `/newbot`?쇰줈 遊뉗쓣 留뚮뱺 ??**?좏겙**??蹂듭궗?⑸땲??
+2. 留뚮뱺 遊뉗쓽 ??붾갑???꾨Т 硫붿떆吏??蹂대깄?덈떎.
+3. `.venv/bin/python tools/telegram_setup.py <?좏겙>`???ㅽ뻾?⑸땲?? chat_id瑜??먮룞?쇰줈 李얠븘 `config.local.json`????ν빀?덈떎. ???뚯씪? git???щ씪媛吏 ?딆뒿?덈떎.
 
-## 설정 (`config.json`)
-| 키 | 기본값 | 의미 |
+## ?ㅼ젙 (`config.json`)
+| ??| 湲곕낯媛?| ?섎? |
 |---|---|---|
-| `face.match_threshold` | 0.363 | 높일수록 엄격해짐 (다른 사람으로 잘못 인식하는 경우 감소, Unknown 증가) |
-| `person.score` | 0.5 | 사람 검출 신뢰도 기준 |
-| `motion.min_area_ratio` | 0.01 | 화면에서 이 비율 이상 바뀌면 움직임으로 판단 |
-| `event.end_after_sec` | 5 | 사람이 사라진 뒤 이 시간이 지나면 이벤트 종료 |
-| `event.unknown_alert_after_sec` | 3 | 이 시간 안에 누구인지 확인되지 않으면 미등록 알림 |
-| `telegram.cooldown_sec` | 60 | 같은 사람에 대한 알림 최소 간격 |
+| `face.match_threshold` | 0.363 | ?믪씪?섎줉 ?꾧꺽?댁쭚 (?ㅻⅨ ?щ엺?쇰줈 ?섎せ ?몄떇?섎뒗 寃쎌슦 媛먯냼, Unknown 利앷?) |
+| `person.score` | 0.5 | ?щ엺 寃異??좊ː??湲곗? |
+| `motion.min_area_ratio` | 0.01 | ?붾㈃?먯꽌 ??鍮꾩쑉 ?댁긽 諛붾뚮㈃ ?吏곸엫?쇰줈 ?먮떒 |
+| `event.end_after_sec` | 5 | ?щ엺???щ씪吏??????쒓컙??吏?섎㈃ ?대깽??醫낅즺 |
+| `event.unknown_alert_after_sec` | 3 | ???쒓컙 ?덉뿉 ?꾧뎄?몄? ?뺤씤?섏? ?딆쑝硫?誘몃벑濡??뚮┝ |
+| `telegram.cooldown_sec` | 60 | 媛숈? ?щ엺??????뚮┝ 理쒖냼 媛꾧꺽 |
 
-## 구조
+## 援ъ“
 ```
-app.py               메인 루프
-seccam/detectors.py  카메라 스레드, 움직임/사람/얼굴 모델
-seccam/events.py     이벤트 상태 관리 (스냅샷, 녹화, CSV, 알림)
-seccam/web.py        Flask MJPEG 스트림 + 대시보드
-seccam/notify.py     텔레그램 전송 (별도 스레드)
-seccam/draw.py       화면 표시 (한글 이름은 Pillow + 나눔폰트)
-tools/               얼굴 등록 촬영, 텔레그램 설정
+app.py               硫붿씤 猷⑦봽
+seccam/detectors.py  移대찓???ㅻ젅?? ?吏곸엫/?щ엺/?쇨뎬 紐⑤뜽
+seccam/events.py     ?대깽???곹깭 愿由?(?ㅻ깄?? ?뱁솕, CSV, ?뚮┝)
+seccam/web.py        Flask MJPEG ?ㅽ듃由?+ ??쒕낫??seccam/notify.py     ?붾젅洹몃옩 ?꾩넚 (蹂꾨룄 ?ㅻ젅??
+seccam/draw.py       ?붾㈃ ?쒖떆 (?쒓? ?대쫫? Pillow + ?섎닎?고듃)
+tools/               ?쇨뎬 ?깅줉 珥ъ쁺, ?붾젅洹몃옩 ?ㅼ젙
 ```
 
-## 한계와 주의
-- 정면 얼굴, 2~3m 이내, 밝은 조명에서 정확합니다. 옆얼굴, 마스크, 역광에서는 `Unknown`이 늘어납니다.
-- 위조 방지 기능이 없어서 사진을 들이대도 속을 수 있습니다. 실제 출입 통제용으로는 쓰지 마세요.
-- 얼굴 사진은 **본인 동의를 받은 사람만** 등록하세요. `known/`과 `events/`는 git에서 제외되어 있습니다.
+## ?쒓퀎? 二쇱쓽
+- ?뺣㈃ ?쇨뎬, 2~3m ?대궡, 諛앹? 議곕챸?먯꽌 ?뺥솗?⑸땲?? ?놁뼹援? 留덉뒪?? ??킅?먯꽌??`Unknown`???섏뼱?⑸땲??
+- ?꾩“ 諛⑹? 湲곕뒫???놁뼱???ъ쭊???ㅼ씠????띿쓣 ???덉뒿?덈떎. ?ㅼ젣 異쒖엯 ?듭젣?⑹쑝濡쒕뒗 ?곗? 留덉꽭??
+- ?쇨뎬 ?ъ쭊? **蹂몄씤 ?숈쓽瑜?諛쏆? ?щ엺留?* ?깅줉?섏꽭?? `known/`怨?`events/`??git?먯꽌 ?쒖쇅?섏뼱 ?덉뒿?덈떎.
 
-## 모델 출처
+## 紐⑤뜽 異쒖쿂
 - YuNet / SFace: [OpenCV Zoo](https://github.com/opencv/opencv_zoo) (Apache-2.0)
-- SSD-MobileNet v1 (COCO, quantized): [TensorFlow Lite 예제 모델](https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip) (Apache-2.0)
+- SSD-MobileNet v1 (COCO, quantized): [TensorFlow Lite ?덉젣 紐⑤뜽](https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip) (Apache-2.0)
