@@ -19,6 +19,7 @@ from seccam import draw, web
 from seccam.detectors import Camera, FaceID, MotionDetector, PersonDetector
 from seccam.events import EventManager
 from seccam.notify import Telegram
+from seccam.presence import Presence
 
 
 def main():
@@ -42,12 +43,15 @@ def main():
     motion = MotionDetector(cfg["motion"]["min_area_ratio"])
     tg_cfg = cfg["telegram"]
     tg = Telegram(tg_cfg["token"], tg_cfg["chat_id"], tg_cfg["enabled"])
+    pr_cfg = cfg["presence"]
+    cfg["event"]["presence_notifies"] = pr_cfg["enabled"] and pr_cfg["notify"]
     events = EventManager(C.resolve(cfg["storage"]["dir"]), cfg["event"], tg, tg_cfg)
+    presence = Presence(events.dir / "presence.csv", pr_cfg, tg) if pr_cfg["enabled"] else None
     cam = Camera(**cfg["camera"])
 
     state = web.LiveState()
     if cfg["web"]["enabled"]:
-        web.start(state, events, cfg["web"]["host"], cfg["web"]["port"])
+        web.start(state, events, presence, cfg["web"]["host"], cfg["web"]["port"])
     q = [cv2.IMWRITE_JPEG_QUALITY, cfg["web"]["jpeg_quality"]]
 
     stop = []
@@ -83,6 +87,8 @@ def main():
                       "faces": [{"name": n, "score": round(s, 2)} for _, n, s in faces if n != "?"]}
             draw.annotate(frame, persons, faces, status)
             events.update(frame, persons, faces, now, fps)
+            if presence is not None:
+                presence.update([n for _, n, _ in faces if n not in (None, "?")], len(persons), now)
             status["rec"] = events.recording
             state.publish(cv2.imencode(".jpg", frame, q)[1].tobytes(), status)
 
@@ -94,6 +100,8 @@ def main():
         pass
     finally:
         events.close()
+        if presence is not None:
+            presence.close_all()
         cam.release()
         cv2.destroyAllWindows()
         print("[main] stopped", flush=True)

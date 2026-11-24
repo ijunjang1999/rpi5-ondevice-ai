@@ -15,7 +15,16 @@
     "max_len_sec": 60,
     "pre_record_sec": 2,
     "unknown_alert_after_sec": 3,
-    "record": true
+    "record": true,
+    "keep_known_only_clips": false
+  },
+  "presence": {
+    "enabled": true,
+    "away_after_sec": 300,
+    "min_session_sec": 60,
+    "person_keeps_alive": true,
+    "notify": true,
+    "daily_report_time": "22:00"
   },
   "storage":  { "dir": "events" },
   "web":      { "enabled": true, "host": "0.0.0.0", "port": 8000, "jpeg_quality": 75 },

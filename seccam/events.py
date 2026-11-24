@@ -62,7 +62,8 @@ class EventManager:
                 if not ev["has_face_snap"]:
                     cv2.imwrite(str(self.dir / ev["snapshot"]), frame)
                     ev["has_face_snap"] = True
-                if self.tg_cfg["notify_known"] and now - self.last_notified.get(name, 0) > self.tg_cfg["cooldown_sec"]:
+                if (self.tg_cfg["notify_known"] and not self.cfg.get("presence_notifies")
+                        and now - self.last_notified.get(name, 0) > self.tg_cfg["cooldown_sec"]):
                     self.last_notified[name] = now
                     self.tg.send(f"✅ {name} 님 확인 ({score:.2f})  {time.strftime('%H:%M:%S')}", self._jpeg(frame))
 
@@ -100,7 +101,14 @@ class EventManager:
         ev, self.ev = self.ev, None
         if ev["writer"] is not None:
             ev["writer"].release()
-        row = [ev["id"], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ev["start"])),
+        # only known people and no alert raised (e.g. someone studying at the desk all day):
+        # drop clip + snapshot to save space; the CSV row is kept
+        if ev["names"] and not ev["unknown"] and not ev["alerted"] and not self.cfg.get("keep_known_only_clips", False):
+            for k in ("clip", "snapshot"):
+                if ev[k]:
+                    (self.dir / ev[k]).unlink(missing_ok=True)
+                    ev[k] = ""
+        row =[ev["id"], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ev["start"])),
                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)), round(now - ev["start"], 1),
                ";".join(sorted(ev["names"])) or ("Unknown" if ev["unknown"] else "person"),
                ev["unknown"], ev["snapshot"], ev["clip"]]
