@@ -13,7 +13,7 @@ if [ "${1:-}" = "--remove" ]; then
   echo "removed"; exit 0
 fi
 
-mkdir -p "$(dirname "$UNIT")"
+mkdir -p "$(dirname "$UNIT")" "$DIR/events"
 cat > "$UNIT" <<EOF
 [Unit]
 Description=Raspberry Pi smart security camera + research-time tracker
@@ -25,6 +25,8 @@ ExecStart=$DIR/.venv/bin/python $DIR/app.py
 Restart=always
 RestartSec=5
 Environment=PYTHONUNBUFFERED=1
+StandardOutput=append:$DIR/events/seccam.log
+StandardError=append:$DIR/events/seccam.log
 
 [Install]
 WantedBy=default.target
@@ -36,4 +38,4 @@ systemctl --user --no-pager status seccam.service | head -5
 if [ "$(loginctl show-user "$USER" -p Linger --value)" != "yes" ]; then
   echo "note: starts at boot via Desktop Autologin. Without autologin run once: sudo loginctl enable-linger $USER"
 fi
-echo "logs: journalctl --user -u seccam -f    stop: systemctl --user stop seccam"
+echo "logs: tail -f $DIR/events/seccam.log    stop: systemctl --user stop seccam"
