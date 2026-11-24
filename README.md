@@ -63,7 +63,7 @@ Windows PC에서 SSH로 보낼 때는 `.\deploy.ps1 -Setup`을 사용합니다. 
 ### 자동 실행 (연구실에 상시 설치할 때)
 ```bash
 bash tools/install_service.sh            # 등록 후 바로 시작. 이후 부팅마다 자동 실행 (sudo 불필요)
-journalctl --user -u seccam -f           # 로그 보기
+tail -f events/seccam.log                # 로그 보기
 systemctl --user restart seccam          # known/ 사진을 바꾼 뒤 다시 읽히기
 systemctl --user stop seccam             # 잠시 끄기 (./run.sh로 직접 실행하기 전에 꼭 끄기: 카메라 중복 사용)
 bash tools/install_service.sh --remove   # 자동 실행 해제

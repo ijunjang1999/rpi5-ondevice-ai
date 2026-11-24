@@ -32,7 +32,8 @@ StandardError=append:$DIR/events/seccam.log
 WantedBy=default.target
 EOF
 systemctl --user daemon-reload
-systemctl --user enable --now seccam.service
+systemctl --user enable seccam.service
+systemctl --user restart seccam.service
 sleep 3
 systemctl --user --no-pager status seccam.service | head -5
 if [ "$(loginctl show-user "$USER" -p Linger --value)" != "yes" ]; then
