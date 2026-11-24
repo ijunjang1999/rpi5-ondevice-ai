@@ -1,0 +1,7 @@
+# Python 3.11 (tflite-runtime 2.14 has no wheel for Pi OS Trixie's Python 3.13 and breaks with numpy 2)
+numpy==1.26.4
+tflite-runtime==2.14.0 ; sys_platform == "linux"
+opencv-python<4.12
+flask>=3,<4
+requests
+pillow

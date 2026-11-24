@@ -1,0 +1,19 @@
+﻿# 개인 정보 / 비밀값
+sd_backup/
+yonsei_wifi/
+*.nmconnection
+config.local.*
+.env
+
+# 실행 결과물
+__pycache__/
+*.pyc
+events/
+recordings/
+snapshots/
+known/
+
+# 수업 실습 원본 (저장소에 포함하지 않음)
+rps_lab/
+models/
+.venv/

@@ -1,0 +1,23 @@
+{
+  "camera":   { "index": 0, "width": 640, "height": 480, "fps": 30 },
+  "motion":   { "min_area_ratio": 0.01, "scan_every_sec": 1.0, "active_sec": 3.0 },
+  "person":   { "model": "models/ssd_mobilenet_v1.tflite", "score": 0.5, "threads": 4 },
+  "face": {
+    "detector": "models/yunet.onnx",
+    "recognizer": "models/sface.onnx",
+    "det_score": 0.8,
+    "match_threshold": 0.363,
+    "min_face_px": 40,
+    "known_dir": "known"
+  },
+  "event": {
+    "end_after_sec": 5,
+    "max_len_sec": 60,
+    "pre_record_sec": 2,
+    "unknown_alert_after_sec": 3,
+    "record": true
+  },
+  "storage":  { "dir": "events" },
+  "web":      { "enabled": true, "host": "0.0.0.0", "port": 8000, "jpeg_quality": 75 },
+  "telegram": { "enabled": true, "token": "", "chat_id": "", "notify_known": true, "cooldown_sec": 60 }
+}
